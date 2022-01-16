@@ -1,3 +1,6 @@
+let wakeUpTime=null, lunchTime=null, napTime=null;
+let wakeUpTimeFlag=false, lunchTimeFlag=false,napTimeFlag=false;  
+
 function box(){
     
     var hours = document.getElementById("hours");
@@ -9,86 +12,98 @@ function box(){
     var a = now.getHours();
     var b = now.getMinutes();
     var c = now.getSeconds();
-    a = a % 12;
-    var d = a >= 12 ? 'am' : 'pm';
 
-    hours.innerHTML=a;
-    minutes.innerHTML=b;
-    seconds.innerHTML=c;
+   
+    var d = a < 12 ? 'am' : 'pm';
+
+    hours.innerHTML=(a%12 < 10) ? `0${a%12}` : a%12;
+    minutes.innerHTML= (b < 10) ? `0${b}` : b;
+    seconds.innerHTML= (c < 10) ? `0${c}` : c;
     ampm.innerHTML=d;
 
+    var milliSeconds = now.getMilliseconds();
+    
+    if(wakeUpTime !== null && wakeUpTimeFlag === false && wakeUpTime == a) {
+        wakeUpTimeFlag = true;
+        document.getElementById("image").style.backgroundImage="url(./wakeup_image.png)";
+        document.getElementById("downimagetext").innerHTML="Good Morning";
+        let resetTime = (60*60000) - (b*60000) - c * 1000 - milliSeconds*100;
+        setTimeout(() => {
+            wakeUpTimeFlag = false;
+        }, resetTime)
+        
+    }
 
+   if(napTime !== null && napTimeFlag === false && napTime == a) {
+        napTimeFlag = true;
+        document.getElementById("image").style.backgroundImage="url(./goodnight_image.png)";
+        document.getElementById("downimagetext").innerHTML="Good Night";
+        let resetTime = (60*60000) - (b*60000) - c * 1000 - milliSeconds*100;
+        setTimeout(() => {
+            document.getElementById("image").style.backgroundImage="url(./wakeup_image.png)";
+            document.getElementById("downimagetext").innerHTML="Good Morning";
+            napTimeFlag = false;
+        }, resetTime)
+    } 
+
+    if(lunchTime !== null && lunchTimeFlag === false && lunchTime == a) {
+        lunchTimeFlag = true;
+        document.getElementById("image").style.backgroundImage="url(./lunch_image.png)";
+        document.getElementById("downimagetext").innerHTML="Good Afternoon ";
+        let resetTime = (60*60000) - (b*60000) - c * 1000 - milliSeconds*100;
+
+        setTimeout(() => {
+            document.getElementById("image").style.backgroundImage="url(./wakeup_image.png)";
+            document.getElementById("downimagetext").innerHTML="Good Morning";
+            lunchTimeFlag = false;
+        }, resetTime)
+    }
 }
 setInterval(box,1000);
 
-function changeDisplay(){
+function changeDisplay(waketime, lunchtime, naptime){
 
+    var insideValue1 = document.getElementById("wakeuptime");
+    var invalue1 = insideValue1.options[insideValue1.selectedIndex].text;
 
+    var insideValue2 = document.getElementById("lunchtime");
+    var invalue2 = insideValue2.options[insideValue2.selectedIndex].text;
 
-let waketime = document.getElementById("wakeuptime").value;
-let lunchtime = document.getElementById("lunchtime").value;
-let naptime = document.getElementById("dinnertime").value;
+    var insideValue3 = document.getElementById("dinnertime");
+    var invalue3 = insideValue3.options[insideValue3.selectedIndex].text;
 
-var insideValue1 = document.getElementById("wakeuptime");
-var invalue1 = insideValue1.options[insideValue1.selectedIndex].text;
+    if (waketime == "none") {
+    document.getElementById("eleven").innerHTML = "Wake up time : ";
+    } else {
+    document.getElementById("eleven").innerHTML =
+    "Wake up time : " + invalue1;
+    }
 
-var insideValue2 = document.getElementById("lunchtime");
-var invalue2 = insideValue2.options[insideValue2.selectedIndex].text;
+    if (lunchtime == "none") {
+    document.getElementById("twelve").innerHTML = "Lunch time : ";
+    } else {
+    document.getElementById("twelve").innerHTML =
+    "Lunch time : " + invalue2;
+    }
 
-var insideValue3 = document.getElementById("dinnertime");
-var invalue3 = insideValue3.options[insideValue3.selectedIndex].text;
+    if (naptime == "none") {
+    document.getElementById("thirteen").innerHTML = "Nap time : ";
+    } else {
+    document.getElementById("thirteen").innerHTML = "Nap time : " + invalue3;
+    }
 
-if (waketime == "none") {
-document.getElementById("wakeuptime").innerHTML = "";
-} else {
-document.getElementById("wakeuptime").innerHTML =
-"Wake up time : " + invalue1;
+    document.getElementById("message").style.display = "block";
 }
-
-if (lunchtime == "none") {
-document.getElementById("lunchtime").innerHTML = "";
-} else {
-document.getElementById("lunchtime").innerHTML =
-"Lunch time : " + invalue2;
-}
-
-if (naptime == "none") {
-document.getElementById("dinnertime").innerHTML = "";
-} else {
-document.getElementById("dinnertime").innerHTML = "Nap time : " + invalue3;
-}
-}
-
-
-
-
-
-
 
 
 function display(){
     var one = document.getElementById("wakeuptime").value;
-    var time = newDate().getHours();
-
-    if(one == time){
-        document.getElementById("image").style.backgroundImage="url(./wakeup_image.png)";
-        document.getElementById("downimagetext").innerHTML="Good Morning";
-    }
-
     var two = document.getElementById("lunchtime").value;
-    var time = newDate().getHours();
-
-    if(two == time){
-        document.getElementById("image").style.backgroundImage="url(./lunch_image.png)";
-        document.getElementById("downimagetext").innerHTML="Good Afternoon";
-    }
-
     var three = document.getElementById("dinnertime").value;
-    var time = newDate().getHours();
 
-    if(three == time){
-        document.getElementById("image").style.backgroundImage="url(./goodnight_image.png)";
-        document.getElementById("downimagetext").innerHTML="Good Night";
-    }
-    changeDisplay();
+    wakeUpTime = (one === "none") ? null : one;
+    lunchTime = (two === "none") ? null : two;
+    napTime = (three === "none") ? null : three;
+
+    changeDisplay(one, two, three);
 }
